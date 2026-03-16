@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "noUncheckedIndexedAccess": true,
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "noEmit": false,
+    "skipLibCheck": false
+  }
+}

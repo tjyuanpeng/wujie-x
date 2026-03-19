@@ -4,7 +4,6 @@ import AutoImport from 'unplugin-auto-import/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 import Components from 'unplugin-vue-components/vite'
 import { defineConfig } from 'vite'
-import Pages from 'vite-plugin-pages'
 
 export default defineConfig({
   plugins: [
@@ -17,13 +16,10 @@ export default defineConfig({
       dts: './src/types/components.d.ts',
       resolvers: [ElementPlusResolver()],
     }),
-    Pages({
-      exclude: ['**/components/*.vue'],
-    }),
     vue(),
     vueJsx(),
   ],
   server: {
-    port: 8000,
+    port: 8011,
   },
 })

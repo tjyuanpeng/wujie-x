@@ -36,8 +36,8 @@ export function addSandboxCacheWithWujie(id: string, sandbox: Wujie): void {
 
 export function deleteWujieById(id: string) {
   const wujieCache = idToSandboxCacheMap.get(id);
-  if (wujieCache?.options) idToSandboxCacheMap.set(id, { options: wujieCache.options });
   idToSandboxCacheMap.delete(id);
+  if (wujieCache?.options) idToSandboxCacheMap.set(id, { options: wujieCache.options });
 }
 
 export function addSandboxCacheWithOptions(id: string, options: cacheOptions): void {

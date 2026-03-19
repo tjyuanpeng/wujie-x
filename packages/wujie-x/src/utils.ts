@@ -331,8 +331,9 @@ export function mergeOptions(options: cacheOptions, cacheOptions: cacheOptions) 
     exec: options.exec !== undefined ? options.exec : cacheOptions?.exec,
     replace: options.replace || cacheOptions?.replace,
     fetch: options.fetch || cacheOptions?.fetch,
-    props: options.props || cacheOptions?.props,
+    props: options.props !== undefined || cacheOptions?.props !== undefined ? Object.assign({}, cacheOptions?.props, options?.props) : undefined,
     sync: options.sync !== undefined ? options.sync : cacheOptions?.sync,
+    syncHistory: options.syncHistory !== undefined ? options.syncHistory : cacheOptions?.syncHistory,
     prefix: options.prefix || cacheOptions?.prefix,
     loading: options.loading || cacheOptions?.loading,
     // 默认 {}

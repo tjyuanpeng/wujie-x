@@ -1,8 +1,21 @@
 {
   "name": "wujie-x",
   "type": "module",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "wujie fork",
+  "license": "MIT",
+  "homepage": "https://github.com/tjyuanpeng/wujie-x",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tjyuanpeng/wujie-x.git"
+  },
+  "bugs": {
+    "url": "https://github.com/tjyuanpeng/wujie-x/issues"
+  },
+  "keywords": [
+    "wujie",
+    "microfrontend"
+  ],
   "exports": {
     ".": "./dist/index.mjs",
     "./package.json": "./package.json"

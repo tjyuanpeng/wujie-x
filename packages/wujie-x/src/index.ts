@@ -16,6 +16,7 @@ import {
 import { getWujieById, getOptionsById, addSandboxCacheWithOptions } from "./common";
 import { EventBus } from "./event";
 import { WUJIE_TIPS_NOT_SUPPORTED } from "./constant";
+import { listenMainHistoryChange } from "./sync-history";
 
 export const bus = new EventBus(Date.now().toString());
 
@@ -89,6 +90,13 @@ type eventListenerHook = (
 
 export type loadErrorHandler = (url: string, e: Error) => any;
 
+export interface SyncHistoryOptions {
+  toMain?: (name: string, fullPath: string) => string | false
+  toSub?: (name: string, fullPath: string) => string | false
+}
+
+export type SyncHistory = SyncHistoryOptions | true
+
 type baseOptions = {
   /** 唯一性用户必须保证 */
   name: string;
@@ -144,6 +152,7 @@ export type startOptions = baseOptions & {
    * https://html.spec.whatwg.org/multipage/history.html#the-history-interface
    */
   sync?: boolean;
+  syncHistory?: SyncHistory;
   /** 子应用短路径替换，路由同步时生效 */
   prefix?: { [key: string]: string };
   /** 子应用加载时loading元素 */
@@ -205,6 +214,7 @@ export async function startApp(startOptions: startOptions): Promise<Function | v
     alive,
     degrade,
     sync,
+    syncHistory,
     prefix,
     el,
     loading,
@@ -223,7 +233,7 @@ export async function startApp(startOptions: startOptions): Promise<Function | v
     }
     if (alive) {
       // 保活
-      await sandbox.active({ url, sync, prefix, el, props, alive, fetch, replace });
+      await sandbox.active({ url, sync, syncHistory, prefix, el, props, alive, fetch, replace });
       // 预加载但是没有执行的情况
       if (!sandbox.execFlag) {
         sandbox.lifecycles?.beforeLoad?.(sandbox.iframe.contentWindow);
@@ -240,6 +250,7 @@ export async function startApp(startOptions: startOptions): Promise<Function | v
         await sandbox.start(getExternalScripts);
       }
       sandbox.lifecycles?.activated?.(sandbox.iframe.contentWindow);
+      sandbox.bus.$emit(`@wujie-x/app-activated:${sandbox.id}`)
       return () => sandbox.destroy();
     } else if (isFunction(iframeWindow.__WUJIE_MOUNT)) {
       /**
@@ -247,7 +258,7 @@ export async function startApp(startOptions: startOptions): Promise<Function | v
        * 此处是防止没有销毁webcomponent时调用startApp的情况，需要手动调用unmount
        */
       await sandbox.unmount();
-      await sandbox.active({ url, sync, prefix, el, props, alive, fetch, replace });
+      await sandbox.active({ url, sync, syncHistory, prefix, el, props, alive, fetch, replace });
       // 正常加载的情况，先注入css，最后才mount。重新激活也保持同样的时序
       sandbox.rebuildStyleSheets();
       // 有渲染函数
@@ -260,6 +271,10 @@ export async function startApp(startOptions: startOptions): Promise<Function | v
       // 没有渲染函数
       await sandbox.destroy();
     }
+  }
+
+  if (syncHistory) {
+    listenMainHistoryChange();
   }
 
   // 设置loading
@@ -289,7 +304,8 @@ export async function startApp(startOptions: startOptions): Promise<Function | v
   });
 
   const processedHtml = await processCssLoader(newSandbox, template, getExternalStyleSheets);
-  await newSandbox.active({ url, sync, prefix, template: processedHtml, el, props, alive, fetch, replace });
+  // eslint-disable-next-line
+  await newSandbox.active({ url, sync, syncHistory, prefix, template: processedHtml, el, props, alive, fetch, replace });
   await newSandbox.start(getExternalScripts);
   return () => newSandbox.destroy();
 }
@@ -373,3 +389,5 @@ export function destroyApp(id: string): void {
     sandbox.destroy();
   }
 }
+
+export { getWujieById, getOptionsById } from './common'

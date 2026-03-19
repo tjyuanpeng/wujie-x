@@ -1,8 +1,22 @@
 {
   "name": "wujie-x-vue",
   "type": "module",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "wujie-x for vue",
+  "license": "MIT",
+  "homepage": "https://github.com/tjyuanpeng/wujie-x",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tjyuanpeng/wujie-x.git"
+  },
+  "bugs": {
+    "url": "https://github.com/tjyuanpeng/wujie-x/issues"
+  },
+  "keywords": [
+    "vue",
+    "wujie",
+    "microfrontend"
+  ],
   "exports": {
     ".": "./dist/index.js",
     "./package.json": "./package.json"

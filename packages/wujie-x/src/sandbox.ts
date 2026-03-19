@@ -32,6 +32,7 @@ import { EventBus, appEventObjMap, EventObj } from "./event";
 import { isFunction, wujieSupport, appRouteParse, requestIdleCallback, getAbsolutePath, eventTrigger } from "./utils";
 import { WUJIE_DATA_ATTACH_CSS_FLAG } from "./constant";
 import { plugin, ScriptObjectLoader, loadErrorHandler } from "./index";
+import type { SyncHistory } from "./index";
 
 export type lifecycle = (appWindow: Window) => any;
 type lifecycles = {
@@ -93,6 +94,8 @@ export default class Wujie {
   public mountFlag: boolean;
   /** 路由同步标志 */
   public sync: boolean;
+  /** 路由history模式标志 */
+  public syncHistory: SyncHistory;
   /** 子应用短路径替换，路由同步时生效 */
   public prefix: { [key: string]: string };
   /** 子应用跳转标志 */
@@ -143,6 +146,7 @@ export default class Wujie {
   public async active(options: {
     url: string;
     sync?: boolean;
+    syncHistory?: SyncHistory;
     prefix?: { [key: string]: string };
     template?: string;
     el?: string | HTMLElement;
@@ -151,9 +155,10 @@ export default class Wujie {
     fetch?: (input: RequestInfo, init?: RequestInit) => Promise<Response>;
     replace?: (code: string) => string;
   }): Promise<void> {
-    const { sync, url, el, template, props, alive, prefix, fetch, replace } = options;
+    const { sync, syncHistory, url, el, template, props, alive, prefix, fetch, replace } = options;
     this.url = url;
     this.sync = sync;
+    this.syncHistory = syncHistory;
     this.alive = alive;
     this.hrefFlag = false;
     this.prefix = prefix ?? this.prefix;
@@ -474,6 +479,11 @@ export default class Wujie {
     }
     (hostStyleSheetElement || fontStyleSheetElement) &&
       this.shadowRoot.host.setAttribute(WUJIE_DATA_ATTACH_CSS_FLAG, "");
+  }
+
+  public updateProps(props: any): void {
+    this.provide.props = Object.assign({}, this.provide.props, props)
+    this.bus.$emit(`@wujie-x/props-change:${this.id}`)
   }
 
   /**

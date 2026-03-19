@@ -1,20 +1,29 @@
-name: Build and Publish to npm
+name: Release to npm
 
 on:
   push:
-    tags:
-      - 'v*'
+    branches:
+      - main
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 permissions:
   contents: write
+  pull-requests: write
   id-token: write
 
 jobs:
-  build-and-publish:
+  release:
+    if: github.repository == 'tjyuanpeng/wujie-x'
+
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -23,20 +32,28 @@ jobs:
           registry-url: https://registry.npmjs.org/
 
       - name: Install pnpm
-        uses: pnpm/action-setup@v3
+        uses: pnpm/action-setup@v4
         with:
-          version: 10.23.0
+          version: 10
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Build project
-        run: pnpm build
-
-      - name: Update versions
-        run: pnpm changeset version
-
-      - name: Publish to npm
-        run: pnpm changeset publish
+      - name: Create Version PR or Publish
+        id: changesets
+        uses: changesets/action@v1
+        with:
+          version: pnpm changeset version
+          publish: pnpm release
+          commit: 'chore(release): version packages'
+          title: 'chore(release): version packages 🦋'
         env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_CONFIG_REGISTRY: https://registry.npmjs.org/
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Log if packages were published
+        if: steps.changesets.outputs.published == 'true'
+        run: |
+          echo "✅ Successfully published:"
+          echo "${{ steps.changesets.outputs.publishedPackages }}"

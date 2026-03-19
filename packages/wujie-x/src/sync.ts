@@ -2,11 +2,16 @@ import { anchorElementGenerator, getAnchorElementQueryMap, getSyncUrl, appRouteP
 import { renderIframeReplaceApp, patchEventTimeStamp } from "./iframe";
 import { renderElementToContainer, initRenderIframeAndContainer } from "./shadow";
 import { getWujieById, rawDocumentQuerySelector } from "./common";
+import { syncHistoryToMain, syncHistoryToSub } from "./sync-history";
 
 /**
  * 同步子应用路由到主应用路由
  */
 export function syncUrlToWindow(iframeWindow: Window): void {
+  if (iframeWindow.__WUJIE.syncHistory) {
+    return syncHistoryToMain(iframeWindow);
+  }
+
   const { sync, id, prefix } = iframeWindow.__WUJIE;
   let winUrlElement = anchorElementGenerator(window.location.href);
   const queryMap = getAnchorElementQueryMap(winUrlElement);
@@ -49,6 +54,10 @@ export function syncUrlToWindow(iframeWindow: Window): void {
  * 同步主应用路由到子应用
  */
 export function syncUrlToIframe(iframeWindow: Window): void {
+  if (iframeWindow.__WUJIE.syncHistory) {
+    return syncHistoryToSub();
+  }
+
   // 获取当前路由路径
   const { pathname, search, hash } = iframeWindow.location;
   const { id, url, sync, execFlag, prefix, inject } = iframeWindow.__WUJIE;

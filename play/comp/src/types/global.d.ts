@@ -1,0 +1,3 @@
+interface $WujieProps {
+  value: string
+}

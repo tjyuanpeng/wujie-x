@@ -13,6 +13,5 @@ export default antfu({
 }, {
   rules: {
     'style/brace-style': ['error', '1tbs', { allowSingleLine: true }],
-    'vue/brace-style': ['error', '1tbs', { allowSingleLine: true }],
   },
 })

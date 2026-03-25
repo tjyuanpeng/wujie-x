@@ -1,4 +1,3 @@
-export * from './components/index'
 export { default } from './components/index'
 export * from './hooks/on-wujie-x-activated'
 export * from './hooks/use-wujie-x-event'

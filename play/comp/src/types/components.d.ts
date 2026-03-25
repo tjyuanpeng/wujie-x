@@ -14,8 +14,6 @@ declare module 'vue' {
   export interface GlobalComponents {
     ElButton: typeof import('element-plus/es')['ElButton']
     ElSelect: typeof import('element-plus/es')['ElSelect']
-    RouterLink: typeof import('vue-router')['RouterLink']
-    RouterView: typeof import('vue-router')['RouterView']
   }
 }
 
@@ -23,6 +21,4 @@ declare module 'vue' {
 declare global {
   const ElButton: typeof import('element-plus/es')['ElButton']
   const ElSelect: typeof import('element-plus/es')['ElSelect']
-  const RouterLink: typeof import('vue-router')['RouterLink']
-  const RouterView: typeof import('vue-router')['RouterView']
 }

@@ -4,7 +4,7 @@ import routes from '~pages'
 import App from './App.vue'
 
 const router = createRouter({
-  history: createWebHistory('/sub1'),
+  history: createWebHistory('/sub2'),
   routes,
 })
 
